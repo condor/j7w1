@@ -37,7 +37,7 @@ module J7W1
       require "#{current_strategy[:filename]}/active_record"
 
       active_record_extension = current_strategy[:module_name].const_get(:ActiveRecord)
-      ActiveSupport.on_load do
+      ActiveSupport.on_load(:active_record) do
         ActiveRecord::Base.__send__ :include, active_record_extension
       end
     end
