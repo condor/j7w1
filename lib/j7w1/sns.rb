@@ -56,5 +56,5 @@ module J7W1
   end
 end
 
-require 'j7w1/sns/active_record_ext'
+require 'j7w1/sns/active_record'
 require 'j7w1/sns/push_client'

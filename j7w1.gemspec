@@ -5,11 +5,11 @@ require 'j7w1/version'
 
 Gem::Specification.new do |spec|
   spec.name          = "j7w1"
-  spec.version       = J7w1::VERSION
+  spec.version       = J7W1::VERSION
   spec.authors       = ["condor"]
-  spec.email         = ["toyodan@r.recruit.co.jp"]
-  spec.description   = %q{TODO: Write a gem description}
-  spec.summary       = %q{TODO: Write a gem summary}
+  spec.email         = ["condor1226@gmail.com"]
+  spec.description   = %q{Mobile apps push client}
+  spec.summary       = %q{Mobile apps push client}
   spec.homepage      = ""
   spec.license       = "MIT"
 
@@ -18,6 +18,10 @@ Gem::Specification.new do |spec|
   spec.test_files    = spec.files.grep(%r{^(test|spec|features)/})
   spec.require_paths = ["lib"]
 
+  spec.add_dependency "activerecord", ">= 4.0.0"
+  spec.add_dependency "aws-sdk", "~> 1.17"
+
   spec.add_development_dependency "bundler", "~> 1.3"
   spec.add_development_dependency "rake"
+  spec.add_development_dependency "rspec"
 end

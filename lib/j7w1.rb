@@ -10,18 +10,11 @@ module J7W1
       mediator_layer = "j7w1/#{strategy_name}"
       require mediator_layer
 
-      strategy_as_module_name = strategy_name.to_s.gsub(/^[a-z]/){|c|c.upcase}.gsub(/_([a-z])/){|_|$1.upcase}
-      mediator_module_name = "::J7W1::#{strategy_as_module_name}"
-      mediator_module = const_get(mediator_module_name.to_sym)
+      mediator_module = "::J7W1::#{strategy_name.camelcase}".constantize
+      @current_strategy = mediator_module
 
-      @current_strategy = {
-          filename: mediator_layer,
-          module: mediator_module,
-      }
-
-      const_set(:PushClient, mediator_module::PushClient)
-      const_set(:ActiveRecordExt, mediator_module::ActiveRecordExt)
-      ActiveRecord::Base.send :include, ActiveRecordExt
+      const_set(:PushClient, current_strategy::PushClient)
+      ActiveRecord::Base.__send__ :include, current_strategy::ActiveRecord
       configure configuration
     end
 
@@ -29,17 +22,7 @@ module J7W1
       return unless configuration
 
       configuration = configuration_values_of(configuration)
-      enable_active_record if configuration[:active_record]
       current_strategy.configure configuration
-    end
-
-    def enable_active_record
-      require "#{current_strategy[:filename]}/active_record"
-
-      active_record_extension = current_strategy[:module_name].const_get(:ActiveRecord)
-      ActiveSupport.on_load(:active_record) do
-        ActiveRecord::Base.__send__ :include, active_record_extension
-      end
     end
 
     private
@@ -62,10 +45,12 @@ module J7W1
 
     def regularize_for_symbolization(value)
       case value
+        when ActiveSupport::HashWithIndifferentAccess
+          value
         when Hash
-          symbolize_keys_recursive(value)
+          value.symbolize_keys
         when Array
-          value.map{|v|regularize_for_symbolization(value)}
+          value.map{|v|regularize_for_symbolization(v)}
         else
           value
       end
