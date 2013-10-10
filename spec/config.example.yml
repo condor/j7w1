@@ -1,0 +1,7 @@
+app_endpoint:
+  ios:
+    arn: "arn:aws:sns:<Your Region>:<Your Account ID>:app/<YourApp.sandbox? ? APNS_SANDBOX : APNS>/<Your App's name>"
+account:
+  access_key_id: "<Your Access Key>"
+  secret_access_key: "<Your Secret Key>"
+  region: '<Your Region>'
