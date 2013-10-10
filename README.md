@@ -1,6 +1,6 @@
-# J7w1
+# J7W1
 
-TODO: Write a gem description
+A gem to send the push notification to mobile app via Amazon Simple Notification Service (SNS)
 
 ## Installation
 
@@ -18,7 +18,13 @@ Or install it yourself as:
 
 ## Usage
 
-TODO: Write usage instructions here
+First, 
+
+First, add the statements below to your model which stands for the Recipient of the Push Notification.
+
+    application_device_owner
+
+Next, aaa
 
 ## Contributing
 

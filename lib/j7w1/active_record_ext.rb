@@ -6,7 +6,7 @@ module J7W1
 
     module ClassMethods
       private
-      def terminal_owner
+      def application_device_owner
         include InstanceMethods
 
         has_many :application_devices, class_name: 'J7W1::ApplicationDevice'

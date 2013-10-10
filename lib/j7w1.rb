@@ -27,12 +27,20 @@ module J7W1
 
     private
     def configuration_values_of(configuration)
-      case configuration
-        when String
-          configuration_values_of(YAML.load(File.read(configuration)))
-        when Hash
-          symbolize_keys_recursive(configuration)
-      end
+      configuration = 
+        case configuration
+          when String
+            configuration_values_of(YAML.load(File.read(configuration)))
+          when Hash
+            configuration
+          else
+            raise ArgumentError, "J7W1.configure can acceptable only Hash(configuration values) or String(pointing the yaml config file)"
+          end
+        end
+      configuration = symbolize_keys_recursive(configuration)
+
+      return configuration[Rails.env.to_sym] if configuration[Rails.env.to_sym]
+      configuration
     end
 
     def symbolize_keys_recursive(hash)
