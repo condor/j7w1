@@ -4,13 +4,13 @@ module J7W1
       AWS::SNS.new J7W1.configuration.account
     end
 
-    def push(destination, options = {})
+    def push(terminal, options = {})
       message = options[:message]
       badge = options[:badge]
       sound = options[:sound]
       sns_configuration = options[:sns_configuration]
 
-      return unless endpoint = destination.sns_endpoint
+      return unless endpoint = terminal.sns_arn
 
       message_value = {}
       message_value.merge!(alert: message) unless message.blank?
