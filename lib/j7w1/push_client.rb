@@ -1,7 +1,14 @@
-module J7W1::Sns
+module J7W1
   module PushClient
-    def push(destination, message: nil, badge: nil, sound: nil, sns: nil)
-      sns ||= J7W1::Sns.create_sns
+    def self.create_sns_client(configuration = J7W1.configuration)
+      AWS::SNS.new J7W1.configuration.account
+    end
+
+    def push(destination, options = {})
+      message = options[:message]
+      badge = options[:badge]
+      sound = options[:sound]
+      sns_configuration = options[:sns_configuration]
 
       return unless endpoint = destination.sns_endpoint
 
@@ -12,7 +19,7 @@ module J7W1::Sns
 
 
       payload = payload_for(message_value, endpoint.platform)
-      sns.client.publish(
+      J7W1.create_sns(sns_configuration || J7W1.configuration).sns.client.publish(
           target_arn: endpoint.arn,
           message: payload.to_json,
           message_structure: 'json',

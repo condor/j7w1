@@ -6,23 +6,23 @@ module J7W1
     attr_reader :current_strategy
     private :current_strategy
 
-    def strategy(strategy_name, configuration: nil)
-      mediator_layer = "j7w1/#{strategy_name}"
-      require mediator_layer
-
-      mediator_module = "::J7W1::#{strategy_name.camelcase}".constantize
-      @current_strategy = mediator_module
-
-      const_set(:PushClient, current_strategy::PushClient)
-      ActiveRecord::Base.__send__ :include, current_strategy::ActiveRecord
-      configure configuration
-    end
-
     def configure(configuration)
-      return unless configuration
+      raise ArgumentError,
+        "J7W1 configuration values should be an instance of Hash or String, but actually it is a kind of #{configuration.class.name}" unless
+      configuration.is_a?(Hash) || configuration.is_a?(String)
 
       configuration = configuration_values_of(configuration)
-      current_strategy.configure configuration
+      if configuration[:mock]
+        require 'j7w1/mock'
+        return
+      end
+
+      require 'j7w1/concrete'
+      @configuration = Configuration.new configuration
+    end
+
+    def configuration
+      @configuration
     end
 
     private
@@ -43,6 +43,8 @@ module J7W1
       end
     end
 
+if const_defined?(:ActiveSupport) && Hash.instance_methods.include?(:symbolize_keys) &&
+  const_get((:ActiveSupport).const_defined?(:HashWithIndifferentAccess)
     def regularize_for_symbolization(value)
       case value
         when ActiveSupport::HashWithIndifferentAccess
@@ -55,5 +57,21 @@ module J7W1
           value
       end
     end
+else
+    def regularize_for_symbolization(value)
+      case value
+        when Hash
+          value.inject({}) do |h, kv|
+            (key, value) = kv
+            h[key.to_sym] = regularize_for_symbolization(value)
+            h
+          end
+        when Array
+          value.map{|v|regularize_for_symbolization(v)}
+        else
+          value
+      end
+    end
+end
   end
 end
