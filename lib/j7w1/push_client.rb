@@ -1,14 +1,18 @@
 module J7W1
   module PushClient
-    def self.create_sns_client(configuration = J7W1.configuration)
+    def create_sns_client(configuration = J7W1.configuration)
       AWS::SNS.new J7W1.configuration.account
     end
 
-    def create_device_endpoint(device_identifier, platform, custom_user_data = nil)
-      sns_client = J7W1.create_sns.client
+    def create_device_endpoint(device_identifier, platform, options = {})
+      custom_user_data = options[:custom_user_data]
+      sns_configuration = options[:sns_configuration]
+      sns_client = options[:sns_client]
+
+      sns_client ||= create_sns_client(sns_configuration || J7W1.configuration)
 
       sns_config = J7W1.configuration
-      app_arn = platform == 'ios' ?  sns_config.ios_endpoint.arn :
+      app_arn = platform == :ios ?  sns_config.ios_endpoint.arn :
         sns_config.android_endpoint.arn
 
       begin
@@ -47,7 +51,7 @@ module J7W1
 
       payload = payload_for(message_value, endpoint.platform)
 
-      sns_client = J7W1.create_sns(sns_configuration || J7W1.configuration)
+      sns_client ||= create_sns_client(sns_configuration || J7W1.configuration)
       sns_client.sns.client.publish(
           target_arn: endpoint.arn,
           message: payload.to_json,
@@ -75,6 +79,7 @@ module J7W1
       # TODO Android Push Implementation
     end
 
-    module_function :push, :payload_for, :ios_payload_for, :android_payload_for
+    module_function :create_sns_client, :create_device_endpoint, :push,
+      :payload_for, :ios_payload_for, :android_payload_for
   end
 end
