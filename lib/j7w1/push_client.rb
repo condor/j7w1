@@ -17,21 +17,30 @@ module J7W1
 
       begin
         endpoint =
-          sns_client.create_platform_endpoint(
+          sns_client.client.create_platform_endpoint(
             platform_application_arn: app_arn,
-            token: recipient.device_token,
+            token: device_identifier,
             custom_user_data: custom_user_data
           )
         endpoint[:endpoint_arn]
       rescue AWS::SNS::Errors::InvalidParameter => e
-        if e.message =~ /Endpoint (arn:aws:sns:#{Setting.push.sns.account.region}:\d+:endpoint\S+) already exists with the same Token/
+        if e.message =~ /Endpoint (arn:aws:sns:#{J7W1.configuration.account.region}:\d+:endpoint\S+) already exists with the same Token/
           arn = $1
-          sns_client.set_endpoint_attributes(endpoint_arn: arn, attributes: {'CustomUserData' => custom_user_data})
+          sns_client.client.set_endpoint_attributes(endpoint_arn: arn, attributes: {'CustomUserData' => custom_user_data})
           return arn
         end
 
         raise
       end
+    end
+
+    def destroy_endpoint(device_endpoint_arn, options = {})
+      sns_client = options[:sns_client]
+      sns_client ||= create_sns_client(sns_configuration || J7W1.configuration)
+
+      sns_client.client.delete_endpoint(endpoint_arn: device_endpoint_arn)
+    rescue
+      nil
     end
 
     def push(device, options = {})
@@ -52,7 +61,7 @@ module J7W1
       payload = payload_for(message_value, endpoint.platform)
 
       sns_client ||= create_sns_client(sns_configuration || J7W1.configuration)
-      sns_client.sns.client.publish(
+      sns_client.client.publish(
           target_arn: endpoint.arn,
           message: payload.to_json,
           message_structure: 'json',
