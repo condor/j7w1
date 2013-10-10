@@ -33,26 +33,25 @@ module J7W1
       nil
     end
 
-    def push(device, options = {})
+    def push(endpoint_arn, platform, options = {})
+      return unless endpoint_arn && platform
+
       message = options[:message]
       badge = options[:badge]
       sound = options[:sound]
       sns_configuration = options[:sns_configuration]
       sns_client = options[:sns_client]
 
-      return unless endpoint = device.sns_arn
-
       message_value = {}
       message_value.merge!(alert: message) unless message.blank?
       message_value.merge!(badge: badge) unless badge.blank?
       message_value.merge!(sound: sound) unless sound.blank?
 
-
-      payload = payload_for(message_value, endpoint.platform)
+      payload = payload_for(message_value, platform)
 
       sns_client ||= create_sns_client(sns_configuration || J7W1.configuration)
       sns_client.client.publish(
-          target_arn: endpoint.arn,
+          target_arn: endpoint_arn,
           message: payload.to_json,
           message_structure: 'json',
       )

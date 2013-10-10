@@ -30,7 +30,7 @@ module J7W1
       def push!(options = {})
         sns_client = self.create_sns_client
         aplication_devices.each do |device|
-          device.push! sns_client, *options
+          device.push! options.tap{|o|o.merge! sns_client: sns_client}
         end
       end
     end
