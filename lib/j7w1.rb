@@ -14,11 +14,11 @@ module J7W1
 
       configuration = configuration_values_of(configuration)
       if configuration[:mock]
-        require 'j7w1/mock'
+        require 'j7_w1/mock'
         return
       end
 
-      require 'j7w1/concrete'
+      require 'j7_w1/concrete'
       @configuration = Configuration.new configuration
     end
 
