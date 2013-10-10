@@ -39,7 +39,10 @@ module J7W1
         end
       configuration = symbolize_keys_recursive(configuration)
 
-      return configuration[Rails.env.to_sym] if configuration[Rails.env.to_sym]
+      if self.class.const_defined? :Rails
+        return configuration[Rails.env.to_sym] if configuration[Rails.env.to_sym]
+      end
+
       configuration
     end
 
