@@ -18,8 +18,8 @@ module J7W1
 
     def initialize(configuration_values)
       @values = configuration_values
-      ios_endpoint.try :extend, IOSEndpoint
-      android_endpoint.try :extend, AndroidEndpoint
+      ios_endpoint.extend(IOSEndpoint) if ios_endpoint
+      android_endpoint.extend(AndroidEndpoint) if android_endpoint
     end
 
     def account
@@ -32,7 +32,7 @@ module J7W1
 
     def android_endpoint
       #TODO configの対応
-      @values[:endpoint][:android]
+      @values[:app_endpoint][:android]
     end
   end
 end

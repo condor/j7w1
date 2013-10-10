@@ -1,6 +1,7 @@
 require 'yaml'
 
 module J7W1
+  autoload :Configuration, 'j7w1/configuration'
 
   class << self
     attr_reader :current_strategy
@@ -36,7 +37,6 @@ module J7W1
           else
             raise ArgumentError, "J7W1.configure can acceptable only Hash(configuration values) or String(pointing the yaml config file)"
           end
-        end
       configuration = symbolize_keys_recursive(configuration)
 
       if self.class.const_defined? :Rails
@@ -54,35 +54,35 @@ module J7W1
       end
     end
 
-if const_defined?(:ActiveSupport) && Hash.instance_methods.include?(:symbolize_keys) &&
-  const_get((:ActiveSupport).const_defined?(:HashWithIndifferentAccess)
-    def regularize_for_symbolization(value)
-      case value
-        when ActiveSupport::HashWithIndifferentAccess
-          value
-        when Hash
-          value.symbolize_keys
-        when Array
-          value.map{|v|regularize_for_symbolization(v)}
-        else
-          value
+    if const_defined?(:ActiveSupport) && Hash.instance_methods.include?(:symbolize_keys) &&
+      const_get(:ActiveSupport).const_defined?(:HashWithIndifferentAccess)
+      def regularize_for_symbolization(value)
+        case value
+          when ActiveSupport::HashWithIndifferentAccess
+            value
+          when Hash
+            value.symbolize_keys
+          when Array
+            value.map{|v|regularize_for_symbolization(v)}
+          else
+            value
+        end
+      end
+    else
+      def regularize_for_symbolization(value)
+        case value
+          when Hash
+            value.inject({}) do |h, kv|
+              (key, value) = kv
+              h[key.to_sym] = regularize_for_symbolization(value)
+              h
+            end
+          when Array
+            value.map{|v|regularize_for_symbolization(v)}
+          else
+              value
+        end
       end
     end
-else
-    def regularize_for_symbolization(value)
-      case value
-        when Hash
-          value.inject({}) do |h, kv|
-            (key, value) = kv
-            h[key.to_sym] = regularize_for_symbolization(value)
-            h
-          end
-        when Array
-          value.map{|v|regularize_for_symbolization(v)}
-        else
-          value
-      end
-    end
-end
   end
 end
