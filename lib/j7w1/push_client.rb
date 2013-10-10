@@ -4,6 +4,32 @@ module J7W1
       AWS::SNS.new J7W1.configuration.account
     end
 
+    def create_device_endpoint(device_identifier, platform, custom_user_data = nil)
+      sns_client = J7W1.create_sns.client
+
+      sns_config = J7W1.configuration
+      app_arn = platform == 'ios' ?  sns_config.ios_endpoint.arn :
+        sns_config.android_endpoint.arn
+
+      begin
+        endpoint =
+          sns_client.create_platform_endpoint(
+            platform_application_arn: app_arn,
+            token: recipient.device_token,
+            custom_user_data: custom_user_data
+          )
+        endpoint[:endpoint_arn]
+      rescue AWS::SNS::Errors::InvalidParameter => e
+        if e.message =~ /Endpoint (arn:aws:sns:#{Setting.push.sns.account.region}:\d+:endpoint\S+) already exists with the same Token/
+          arn = $1
+          sns_client.set_endpoint_attributes(endpoint_arn: arn, attributes: {'CustomUserData' => custom_user_data})
+          return arn
+        end
+
+        raise
+      end
+    end
+
     def push(device, options = {})
       message = options[:message]
       badge = options[:badge]
