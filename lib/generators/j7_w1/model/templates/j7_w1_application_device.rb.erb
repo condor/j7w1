@@ -38,11 +38,11 @@ class J7W1ApplicationDevice < ActiveRecord::Base
 
   private
   def create_device_endpoint_async
-    J7W1Worker.create_device_endpoint id
+    J7W1Worker.perform_async id
   end
 
   def destroy_device_endpoint_async
-    J7W1Worker.destroy_device_endpoint id
+    J7W1Worker.perform_async id
   end
 <%- end -%>
 end
