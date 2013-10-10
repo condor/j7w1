@@ -1,7 +1,7 @@
 # coding: utf-8
 lib = File.expand_path('../lib', __FILE__)
 $LOAD_PATH.unshift(lib) unless $LOAD_PATH.include?(lib)
-require 'j7w1/version'
+require 'j7_w1/version'
 
 Gem::Specification.new do |spec|
   spec.name          = "j7w1"
