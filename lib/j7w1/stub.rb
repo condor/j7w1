@@ -1,50 +1,46 @@
 module J7W1
-  module Stub
-    module PushClient
+  module PushClient
 
-      class << self
-        def push_histories
-          @push_histories ||= []
-        end
+    class << self
+      def push_histories
+        @push_histories ||= []
+      end
 
-        def push(destination, message: nil, badge: nil, sound: nil, sns: nil)
-          @push_histories.push(
-              {
-              destination: destination,
-              message: message,
-              badge: badge,
-              sound: sound,
-              }
-          )
-        end
+      def push(device, options)
+        @push_histories.push(options.merge(device: device))
+      end
+    end
+  end
+
+  module ActiveRecordExt
+    def self.included(base)
+      base.extend ClassMethods
+    end
+
+    module ClassMethods
+      def device_owner_classes
+        require 'set'
+        @device_owner_classes ||= Set.new
+      end
+
+      private
+      def device_owner
+        device_owner_classes << self
       end
     end
 
-    module ActiveRecordExt
-      def self.included(base)
-        base.extend ClassMethods
-      end
-
-      module ClassMethods
-        def push_recipient_classes
-          require 'set'
-          @push_recipient_classes ||= Set.new
-        end
-
-        private
-        def push_recipient
-          push_recipient_classes << self
+    module InstanceMethods
+      def push!(options = {})
+        sns_client = self.create_sns_client
+        aplication_devices.each do |device|
+          device.push! sns_client, *options
         end
       end
 
-      module InstanceMethods
-        def device_token_update_histories
-          @device_token_update_histories ||= []
-        end
+      def add_device(device_identifier, platform)
+      end
 
-        def device_token_updated
-          @device_token_update_histories << {device_token: device_token}
-        end
+      def remove_device(device_identifier, platform)
       end
     end
   end

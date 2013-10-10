@@ -1,4 +1,4 @@
-module J7W1::Sns
+module J7W1
   module ActiveRecordExt
     def self.included(base)
       base.extend ClassMethods
