@@ -7,9 +7,6 @@ module J7W1
       desc: 'AWS register/deregister processing method'
 
     def create_model_file
-p methods.sort - Object.methods
-p options
-
       #create_file "app/models/j7_w1_application_device.rb"
       #begin
       #  invoke "j7_w1:migration"
