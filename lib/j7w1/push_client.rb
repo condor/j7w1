@@ -15,23 +15,13 @@ module J7W1
       app_arn = platform == :ios ?  sns_config.ios_endpoint.arn :
         sns_config.android_endpoint.arn
 
-      begin
-        endpoint =
-          sns_client.client.create_platform_endpoint(
-            platform_application_arn: app_arn,
-            token: device_identifier,
-            custom_user_data: custom_user_data
-          )
-        endpoint[:endpoint_arn]
-      rescue AWS::SNS::Errors::InvalidParameter => e
-        if e.message =~ /Endpoint (arn:aws:sns:#{J7W1.configuration.account.region}:\d+:endpoint\S+) already exists with the same Token/
-          arn = $1
-          sns_client.client.set_endpoint_attributes(endpoint_arn: arn, attributes: {'CustomUserData' => custom_user_data})
-          return arn
-        end
-
-        raise
-      end
+      endpoint =
+        sns_client.client.create_platform_endpoint(
+          platform_application_arn: app_arn,
+          token: device_identifier,
+          custom_user_data: custom_user_data
+        )
+      endpoint[:endpoint_arn]
     end
 
     def destroy_endpoint(device_endpoint_arn, options = {})
