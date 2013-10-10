@@ -2,11 +2,15 @@ module J7W1
   class Configuration
     module IOSEndpoint
       def sandbox?
-        !!self[:sandbox]
+        @sandbox
       end
 
       def arn
         self[:arn]
+      end
+
+      def confirm_sandbox
+        arn =~ /:app\/APNS_SANDBOX\//
       end
     end
 
@@ -24,7 +28,10 @@ module J7W1
 
     def initialize(configuration_values)
       @values = configuration_values
-      ios_endpoint.extend(IOSEndpoint) if ios_endpoint
+      if ios_endpoint
+        ios_endpoint.extend(IOSEndpoint)
+        ios_endpoint.confirm_sandbox
+      end
       android_endpoint.extend(AndroidEndpoint) if android_endpoint
       account.extend(Account)
     end
