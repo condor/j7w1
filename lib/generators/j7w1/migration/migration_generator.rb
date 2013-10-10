@@ -1,11 +1,22 @@
 require 'rails/generators'
-require 'rails/generator/migration'
+require 'rails/generators/migration'
 
 module J7W1
   class MigrationGenerator < Rails::Generators::Base
     include Rails::Generators::Migration
 
-    desc "This generator provides the tables which the J7W1 uses."
+
+    def self.orm
+      Rails::Generators.options[:rails][:orm]
+    end
+
+    def self.source_root
+      File.join(File.dirname(__FILE__), 'templates', (orm.to_s unless orm.class.eql?(String)) )
+    end
+
+    def self.orm_has_migration?
+      [:active_record].include? orm
+    end
 
     def self.next_migration_number(dirname)
       if ActiveRecord::Base.timestamped_migrations
@@ -17,6 +28,7 @@ module J7W1
       end
     end
 
+    desc "This generator provides the tables which the J7W1 uses."
     def create_migration_file
       if self.class.orm_has_migration?
         migration_template 'migration.rb', 'db/migrate/j7w1_application_devices'
