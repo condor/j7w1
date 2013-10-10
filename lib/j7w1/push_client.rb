@@ -9,6 +9,7 @@ module J7W1
       badge = options[:badge]
       sound = options[:sound]
       sns_configuration = options[:sns_configuration]
+      sns_client = options[:sns_client]
 
       return unless endpoint = terminal.sns_arn
 
@@ -19,7 +20,9 @@ module J7W1
 
 
       payload = payload_for(message_value, endpoint.platform)
-      J7W1.create_sns(sns_configuration || J7W1.configuration).sns.client.publish(
+
+      sns_client = J7W1.create_sns(sns_configuration || J7W1.configuration)
+      sns_client.sns.client.publish(
           target_arn: endpoint.arn,
           message: payload.to_json,
           message_structure: 'json',
