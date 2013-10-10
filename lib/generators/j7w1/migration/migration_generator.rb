@@ -5,7 +5,6 @@ module J7W1
   class MigrationGenerator < Rails::Generators::Base
     include Rails::Generators::Migration
 
-
     def self.orm
       Rails::Generators.options[:rails][:orm]
     end
