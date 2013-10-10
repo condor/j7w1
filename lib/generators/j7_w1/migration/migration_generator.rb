@@ -1,8 +1,6 @@
 require 'rails/generators'
 require 'rails/generators/migration'
 
-puts "QQQQQQQQQQ"
-
 module J7W1
   class MigrationGenerator < Rails::Generators::Base
     include Rails::Generators::Migration
