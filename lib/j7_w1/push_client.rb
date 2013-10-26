@@ -4,6 +4,25 @@ module J7W1
       AWS::SNS.new J7W1.configuration.account
     end
 
+    def create_ios_application(name, certs, private_key, options)
+      sandbox = !(options[:sandbox] == false)
+      configuration = options[:sns_configuration] || J7W1.configuration
+
+      private_key = content_from private_key
+      certs = content_from certs
+
+      sns_client = options[:sns_client] || create_sns_client(configuration)
+
+      application_endpoint =
+          sns_client.client.create_platform_application name: name,
+                                                        platform: (sandbox ? 'APNS_SANDBOX' : 'APNS'),
+                                                        attributes: {
+                                                            'PlatformCredential' => private_key,
+                                                            'PlatformPrincipal' => certs,
+                                                        }
+      application_endpoint[:platform_application_arn]
+    end
+
     def create_device_endpoint(device_identifier, platform, options = {})
       custom_user_data = options[:custom_user_data]
       sns_configuration = options[:sns_configuration]
@@ -77,7 +96,16 @@ module J7W1
       # TODO Android Push Implementation
     end
 
-    module_function :create_sns_client, :create_device_endpoint, :push,
-      :payload_for, :ios_payload_for, :android_payload_for
+    def content_from(argument)
+      case argument
+        when IO
+          argument.read
+        when String
+          argument
+      end
+    end
+
+    module_function :create_sns_client, :create_ios_application, :create_device_endpoint, :push,
+      :payload_for, :ios_payload_for, :android_payload_for, :content_from
   end
 end
