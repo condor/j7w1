@@ -4,4 +4,4 @@ app_endpoint:
 account:
   access_key_id: "<Your Access Key>"
   secret_access_key: "<Your Secret Key>"
-  region: '<Your Region>'
+  region: '<Your Region, such as "ap-northeast-1">'
