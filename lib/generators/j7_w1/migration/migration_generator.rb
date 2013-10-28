@@ -30,7 +30,7 @@ module J7W1
     desc "This generator provides the tables which the J7W1 uses."
     def create_migration_file
       if self.class.orm_has_migration?
-        migration_template 'migration.rb', 'db/migrate/j7w1_application_devices'
+        migration_template 'migration.rb', 'db/migrate/j7_w1_application_devices'
       end
     end
     
