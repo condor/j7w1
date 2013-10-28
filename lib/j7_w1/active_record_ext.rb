@@ -9,7 +9,7 @@ module J7W1
       def application_device_owner
         include InstanceMethods
 
-        has_many :application_devices, class_name: 'J7W1::ApplicationDevice'
+        has_many :application_devices, class_name: 'J7W1ApplicationDevice'
       end
     end
 

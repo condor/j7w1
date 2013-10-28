@@ -86,3 +86,8 @@ module J7W1
     end
   end
 end
+
+if defined? ActiveRecord
+  require 'j7_w1/active_record_ext'
+  ActiveRecord::Base.__send__ :include, J7W1::ActiveRecordExt
+end
