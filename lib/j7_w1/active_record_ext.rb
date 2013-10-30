@@ -16,9 +16,10 @@ module J7W1
     module InstanceMethods
       def add_device(device_identifier, platform)
         device =
-          devices.where(device_identifier: device_identifier, platform: platform).
-          find_or_initialize
+          J7W1ApplicationDevice.identified(device_identifier).on_platform(J7W1::Util.normalize_platform(platform)).
+          first_or_initialize
         device.endpoint_arn = nil
+        device.owner = self
         device.save!
       end
 
