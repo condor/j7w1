@@ -1,9 +1,13 @@
 module J7W1
   module Util
     def normalize_platform(platform)
+      platform = platform.to_s.downcase.to_sym unless platform.is_a? Symbol
+
       case platform
-      when 'iPhone OS'
+      when :ios, :'iPhone OS', :'iPad OS'
         :ios
+      else
+        platform
       end
     end
 
