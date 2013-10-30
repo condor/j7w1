@@ -2,6 +2,7 @@ require 'yaml'
 
 module J7W1
   autoload :Configuration, 'j7_w1/configuration'
+  autoload :Util, 'j7_w1/util'
 
   class << self
     attr_reader :current_strategy
