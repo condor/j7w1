@@ -11,7 +11,7 @@ class J7W1ApplicationDevice < ActiveRecord::Base
   after_destroy :destroy_device_endpoint
 <%- end -%>
 
-  scope :by_identifier, -> identifier { where(device_identifier: identifier}
+  scope :identified, -> identifier { where(device_identifier: identifier}
   scope :on_platform, -> platform { where(platform: J7W1::Util.normalize_platform(platform)) }
 
   def push!(options = {})
