@@ -14,12 +14,13 @@ module J7W1
       sns_client = options[:sns_client] || create_sns_client(configuration)
 
       application_endpoint =
-          sns_client.client.create_platform_application name: name,
-                                                        platform: (sandbox ? 'APNS_SANDBOX' : 'APNS'),
-                                                        attributes: {
-                                                            'PlatformCredential' => private_key,
-                                                            'PlatformPrincipal' => certs,
-                                                        }
+          sns_client.client.create_platform_application(
+            name: name, platform: (sandbox ? 'APNS_SANDBOX' : 'APNS'),
+            attributes: {
+              'PlatformCredential' => private_key,
+              'PlatformPrincipal' => certs,
+            }
+          )
       application_endpoint[:platform_application_arn]
     end
 
