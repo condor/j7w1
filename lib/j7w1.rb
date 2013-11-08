@@ -4,8 +4,9 @@ module J7W1
   autoload :Configuration, 'j7w1/configuration'
   autoload :Util, 'j7w1/util'
   autoload :Version, 'j7w1/version'
+  autoload :ActiveRecordExt, 'j7w1/active_record_ext'
 
-  require 'j7w1/active_record_ext' if defined? ActiveRecord::Base
+  ActiveRecord::Base.__send__(:include, ActiveRecordExt) if defined? ActiveRecord::Base
 
   class << self
     attr_reader :current_strategy
