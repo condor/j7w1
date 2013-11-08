@@ -31,9 +31,8 @@ module J7W1
 
     module InstanceMethods
       def push!(options = {})
-        sns_client = self.create_sns_client
         aplication_devices.each do |device|
-          device.push! sns_client, *options
+          J7W1::PushClient.push device, options
         end
       end
 
