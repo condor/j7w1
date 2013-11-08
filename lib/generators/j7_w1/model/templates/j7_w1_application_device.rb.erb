@@ -15,7 +15,7 @@ class J7W1ApplicationDevice < ActiveRecord::Base
   scope :on_platform, -> platform { where(platform: J7W1::Util.normalize_platform(platform)) }
 
   def push!(options = {})
-    J7W1::PushClient.push device_endpoint_arn, platform, *options
+    J7W1::PushClient.push device_endpoint_arn, platform, options
   end
 
   def create_device_endpoint
