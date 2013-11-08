@@ -1,8 +1,11 @@
 require 'yaml'
 
 module J7W1
-  autoload :Configuration, 'j7_w1/configuration'
-  autoload :Util, 'j7_w1/util'
+  autoload :Configuration, 'j7w1/configuration'
+  autoload :Util, 'j7w1/util'
+  autoload :Version, 'j7w1/version'
+
+  require 'j7w1/active_record_ext' if defined? ActiveRecord::Base
 
   class << self
     attr_reader :current_strategy
@@ -15,11 +18,11 @@ module J7W1
 
       configuration = configuration_values_of(configuration)
       if configuration[:mock]
-        require 'j7_w1/mock'
+        autoload :PushClient, 'j7w1/mock'
         return
       end
 
-      require 'j7_w1/concrete'
+      autoload :PushClient, 'j7w1/push_client'
       @configuration = Configuration.new configuration
     end
 
