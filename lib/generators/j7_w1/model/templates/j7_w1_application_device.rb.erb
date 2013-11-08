@@ -41,11 +41,11 @@ class J7W1ApplicationDevice < ActiveRecord::Base
 <%- elsif options['async_engine'] == 'sidekiq' -%>
 
   def create_device_endpoint_async
-    J7W1Worker.perform_async id
+    J7W1CreateEndpointWorker.perform_async id
   end
 
   def destroy_device_endpoint_async
-    J7W1Worker.perform_async id
+    J7W1DestroyEndpointWorker.perform_async id
   end
 <%- end -%>
 end
