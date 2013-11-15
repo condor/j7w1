@@ -10,7 +10,7 @@ module J7W1
       end
 
       def confirm_sandbox
-        arn =~ /:app\/APNS_SANDBOX\//
+        @sandbox = (arn =~ /:app\/APNS_SANDBOX\//)
       end
     end
 
