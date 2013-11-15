@@ -88,7 +88,7 @@ module J7W1
     end
 
     def ios_payload_for(message_value)
-      prefix = J7W1::Sns.configuration.ios_endpoint.sandbox? ?
+      prefix = J7W1.configuration.ios_endpoint.sandbox? ?
           :APNS_SANDBOX : :APNS
       {prefix => {aps: message_value}.to_json}
     end
