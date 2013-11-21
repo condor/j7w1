@@ -22,7 +22,7 @@ module J7W1
 
     module Account
       [:access_key_id, :secret_access_key, :region].each do |attr|
-        define_method(attr){self[attr]}
+        module_eval "def #{attr};self[:#{attr}];end"
       end
     end
 
@@ -41,11 +41,13 @@ module J7W1
     end
 
     def ios_endpoint
+      return nil unless @values[:app_endpoint]
       @values[:app_endpoint][:ios]
     end
 
     def android_endpoint
       #TODO configの対応
+      return nil unless @values[:app_endpoint]
       @values[:app_endpoint][:android]
     end
   end
