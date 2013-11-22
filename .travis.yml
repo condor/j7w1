@@ -3,4 +3,5 @@ ruby:
   - '1.9.3'
   - jruby-19mode
   - rbx-19mode
-install: ./build.sh
+install: bundle install
+script: bundle exec rspec spec
