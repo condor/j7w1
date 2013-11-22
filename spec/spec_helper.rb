@@ -1,6 +1,9 @@
 require 'rspec'
 require 'bundler/setup'
 
+require 'simplecov'
+SimpleCov.start
+
 require 'j7w1'
 
 RSpec.configure do |config|
