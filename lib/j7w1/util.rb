@@ -11,6 +11,15 @@ module J7W1
       end
     end
 
-    instance_methods(false).each{|m|module_function m}
+    def symbolize_keys_recursive(hash)
+      hash.inject({}) do |h, kv|
+        (key, value) = kv
+        h[key.to_sym] =
+            value.is_a?(Hash) ? symbolize_keys_recursive(value) : value
+        h
+      end
+    end
+
+    extend self
   end
 end

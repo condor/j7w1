@@ -12,6 +12,8 @@ module J7W1
     attr_reader :current_strategy
     private :current_strategy
 
+    include Util
+
     def configure(configuration)
       raise ArgumentError,
         "J7W1 configuration values should be an instance of Hash or String, but actually it is a kind of #{configuration.class.name}" unless
@@ -49,14 +51,6 @@ module J7W1
       end
 
       configuration
-    end
-
-    def symbolize_keys_recursive(hash)
-      hash.inject({}) do |h, kv|
-        (key, value) = kv
-        h[key.to_sym] = regularize_for_symbolization(value)
-        h
-      end
     end
 
     if const_defined?(:ActiveSupport) && Hash.instance_methods.include?(:symbolize_keys) &&
