@@ -4,10 +4,11 @@ module J7W1
       platform = platform.to_s.downcase.to_sym unless platform.is_a? Symbol
 
       case platform
-      when :ios, :'iphone os', :'ipad os'
-        :ios
-      else
-        platform
+        when :ios, :'iphone os', :'ipad os'
+          :ios
+        else
+          # TODO Android
+          platform
       end
     end
 
