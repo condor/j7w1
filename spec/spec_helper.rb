@@ -1,8 +1,10 @@
 require 'rspec'
 require 'bundler/setup'
 
-require 'simplecov'
-SimpleCov.start
+unless ENV['SKIP_COV']
+  require 'simplecov'
+  SimpleCov.start
+end
 
 require 'j7w1'
 
