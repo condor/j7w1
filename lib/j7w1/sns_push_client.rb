@@ -1,5 +1,5 @@
 module J7W1
-  module PushClient
+  module SNSPushClient
     def create_sns_client(configuration = J7W1.configuration)
       AWS::SNS.new J7W1.configuration.account
     end

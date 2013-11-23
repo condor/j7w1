@@ -1,5 +1,5 @@
 module J7W1
-  module PushClient
+  module MockPushClient
 
     class << self
       def push_histories
