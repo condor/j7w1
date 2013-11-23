@@ -1,7 +1,7 @@
 module J7W1
   module SNSPushClient
     def create_sns_client(configuration = J7W1.configuration)
-      AWS::SNS.new J7W1.configuration.account
+      AWS::SNS.new configuration.account
     end
 
     def create_ios_application(name, certs, private_key, options)
