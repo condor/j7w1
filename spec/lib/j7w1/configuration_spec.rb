@@ -49,31 +49,52 @@ describe J7W1::Configuration  do
   end
 
   describe :account do
-    subject {
-      J7W1::Configuration.new(
-        account: {
-          region: region,
-          access_key_id: access_key_id,
-          secret_access_key: secret_access_key,
-        }
-      )
-    }
-    let(:region){'ap-northeast-1'}
-    let(:access_key_id){'access_key_id_1'}
-    let(:secret_access_key){'secret_access_key_1'}
 
-    describe 'should return a hash with values under :account given on initialization' do
-      specify{expect(subject.account).to be_kind_of Hash}
-      specify{expect(subject.account[:region]).to eql(region)}
-      specify{expect(subject.account[:access_key_id]).to eql(access_key_id)}
-      specify{expect(subject.account[:secret_access_key]).to eql(secret_access_key)}
+    shared_examples_for 'configuration extraction' do
+      let(:region){'ap-northeast-1'}
+      let(:access_key_id){'access_key_id_1'}
+      let(:secret_access_key){'secret_access_key_1'}
+
+      describe 'should return a hash with values under :account given on initialization' do
+        specify{expect(subject.account).to be_kind_of Hash}
+        specify{expect(subject.account[:region]).to eql(region)}
+        specify{expect(subject.account[:access_key_id]).to eql(access_key_id)}
+        specify{expect(subject.account[:secret_access_key]).to eql(secret_access_key)}
+      end
+
+      describe 'its accessors should return the values which are correspondent to the key' do
+        specify{expect(subject.account.region).to eql(region)}
+        specify{expect(subject.account.access_key_id).to eql(access_key_id)}
+        specify{expect(subject.account.secret_access_key).to eql(secret_access_key)}
+      end
     end
 
-    describe 'its accessors should return the values which are correspondent to the key' do
-      specify{expect(subject.account.region).to eql(region)}
-      specify{expect(subject.account.access_key_id).to eql(access_key_id)}
-      specify{expect(subject.account.secret_access_key).to eql(secret_access_key)}
+    describe 'when keys are kind of Symbol' do
+      subject {
+        J7W1::Configuration.new(
+            account: {
+                region: region,
+                access_key_id: access_key_id,
+                secret_access_key: secret_access_key,
+            }
+        )
+      }
+      it_should_behave_like 'configuration extraction'
     end
+
+    describe 'when keys are kind of String' do
+      subject {
+        J7W1::Configuration.new(
+            'account' => {
+                'region' => region,
+                'access_key_id' =>  access_key_id,
+                'secret_access_key'=> secret_access_key,
+            }
+        )
+      }
+      it_should_behave_like 'configuration extraction'
+    end
+
   end
 
 end

@@ -1,5 +1,7 @@
 module J7W1
   class Configuration
+    include J7W1::Util
+
     module IOSEndpoint
       def sandbox?
         @sandbox
@@ -27,7 +29,7 @@ module J7W1
     end
 
     def initialize(configuration_values)
-      @values = configuration_values
+      @values = symbolize_keys_recursive(configuration_values)
       if ios_endpoint
         ios_endpoint.extend(IOSEndpoint)
         ios_endpoint.confirm_sandbox
