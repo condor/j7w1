@@ -5,6 +5,8 @@ module J7W1
   autoload :Util, 'j7w1/util'
   autoload :Version, 'j7w1/version'
   autoload :ActiveRecordExt, 'j7w1/active_record_ext'
+  autoload :MockPushClient, 'j7w1/mock_push_client'
+  autoload :SNSPushClient, 'j7w1/sns_push_client'
 
   ActiveRecord::Base.__send__(:include, ActiveRecordExt) if defined? ActiveRecord::Base
 
@@ -21,11 +23,11 @@ module J7W1
 
       configuration = configuration_values_of(configuration)
       if configuration[:mock]
-        autoload :PushClient, 'j7w1/mock'
+        replace_concrete_push_client MockPushClient
         return
       end
 
-      autoload :PushClient, 'j7w1/push_client'
+      replace_concrete_push_client SNSPushClient
       @configuration = Configuration.new configuration
     end
 
@@ -81,6 +83,11 @@ module J7W1
           else
               value
         end
+      end
+
+      def replace_concrete_push_client(newer)
+        remove_const :PushClient if defined? PushClient
+        const_set :PushClient, newer
       end
     end
   end
