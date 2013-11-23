@@ -24,6 +24,13 @@ module J7W1
       application_endpoint[:platform_application_arn]
     end
 
+    def destroy_application_endpoint(arn, options)
+      configuration = options[:sns_configuration] || J7W1.configuration
+      client = options[:sns_client] || create_sns_client(configuration)
+
+      client.client.delete_platform_application(platform_application_arn: arn)
+    end
+
     def create_device_endpoint(device_identifier, platform, options = {})
       custom_user_data = options[:custom_user_data]
       sns_configuration = options[:sns_configuration]
