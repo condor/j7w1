@@ -55,6 +55,11 @@ module J7W1
       configuration
     end
 
+    def replace_concrete_push_client(newer)
+      remove_const :PushClient if defined? PushClient
+      const_set :PushClient, newer
+    end
+
     if const_defined?(:ActiveSupport) && Hash.instance_methods.include?(:symbolize_keys) &&
       const_get(:ActiveSupport).const_defined?(:HashWithIndifferentAccess)
       def regularize_for_symbolization(value)
@@ -85,10 +90,6 @@ module J7W1
         end
       end
 
-      def replace_concrete_push_client(newer)
-        remove_const :PushClient if defined? PushClient
-        const_set :PushClient, newer
-      end
     end
   end
 end

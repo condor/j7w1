@@ -4,6 +4,9 @@ require 'rails/generators/migration'
 module J7W1
   class MigrationGenerator < Rails::Generators::Base
     include Rails::Generators::Migration
+    class_option :from_11, type: :boolean, default: :false,
+      desc: 'Generates migration script from v0.0.11 or earlier.'
+
 
     def self.orm
       Rails::Generators.options[:rails][:orm]
@@ -30,7 +33,11 @@ module J7W1
     desc "This generator provides the tables which the J7W1 uses."
     def create_migration_file
       if self.class.orm_has_migration?
-        migration_template 'migration.rb', 'db/migrate/j7_w1_application_devices'
+        if options['from_11']
+          migration_template 'migration_from_11e.rb', 'db/migrate/add_j7_w1_application_devices_disabled'
+        else
+          migration_template 'migration.rb', 'db/migrate/create_j7_w1_application_devices'
+        end
       end
     end
     

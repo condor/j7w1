@@ -1,4 +1,4 @@
-class J7W1ApplicationDevices < ActiveRecord::Migration
+class <%= migration_class_name %> < ActiveRecord::Migration
   def change
     create_table :j7w1_application_devices do |t|
       t.string  :owner_type,          null: false
