@@ -1,7 +1,9 @@
-class J7W1ApplicationDevice < ActiveRecord::Base
+class J8W1ApplicationDevice < ActiveRecord::Base
   self.table_name = 'j7w1_application_devices'
 
   belongs_to :owner, polymorphic: true
+
+  scope :enabled, -> {where(disabled: false)}
 
 <%- if options['async_engine'] -%>
   after_create :create_device_endpoint_async
@@ -16,6 +18,14 @@ class J7W1ApplicationDevice < ActiveRecord::Base
 
   def push!(options = {})
     J7W1::PushClient.push device_endpoint_arn, platform, options
+  rescue AWS::SNS::Errors::EndpoiintDisabled
+    logger.warn{"push for Application Device ##{id} is currently disabled."}
+    begin
+      update_attributes!(disabled: true)
+    rescue
+      logger.warn { "Disabling failure: application device ##{id}" }
+      # grasp all the exception raised.
+    end
   end
 
   def create_device_endpoint
