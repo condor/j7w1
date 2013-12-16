@@ -29,7 +29,7 @@ module J7W1
       end
 
       def push!(options = {})
-        application_devices.each do |device|
+        application_devices.enabled.each do |device|
           device.push! options
         end
       end
