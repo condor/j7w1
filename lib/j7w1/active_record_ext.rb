@@ -20,6 +20,7 @@ module J7W1
           J7W1ApplicationDevice.identified(device_identifier).on_platform(J7W1::Util.normalize_platform(platform)).
           first_or_initialize
         device.owner = self
+        device.disabled = false
         device.save!
       end
 
