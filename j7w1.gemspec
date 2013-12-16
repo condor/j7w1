@@ -10,7 +10,7 @@ Gem::Specification.new do |spec|
   spec.email         = ["condor1226@gmail.com"]
   spec.description   = %q{Mobile apps push client}
   spec.summary       = %q{Mobile apps push client}
-  spec.homepage      = ""
+  spec.homepage      = "https://github.com/condor/j7w1"
   spec.license       = "MIT"
 
   spec.files         = `git ls-files Gemfile LICENSE.txt README.md j7w1.gemspec lib spec`.split($/)
