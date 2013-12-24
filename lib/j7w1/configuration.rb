@@ -2,13 +2,19 @@ module J7W1
   class Configuration
     include J7W1::Util
 
-    module IOSEndpoint
-      def sandbox?
-        @sandbox
-      end
-
+    module MobileEndpoint
       def arn
         self[:arn]
+      end
+    end
+
+    module IOSEndpoint
+      def self.extended(obj)
+        obj.__send__ :extend, MobileEndpoint
+      end
+
+      def sandbox?
+        @sandbox
       end
 
       def confirm_sandbox
@@ -17,8 +23,8 @@ module J7W1
     end
 
     module AndroidEndpoint
-      def arn
-        self[:arn]
+      def self.extended(obj)
+        obj.__send__ :extend, MobileEndpoint
       end
     end 
 
@@ -34,7 +40,9 @@ module J7W1
         ios_endpoint.extend(IOSEndpoint)
         ios_endpoint.confirm_sandbox
       end
-      android_endpoint.extend(AndroidEndpoint) if android_endpoint
+      if android_endpoint
+        android_endpoint.extend(AndroidEndpoint)
+      end
       account.extend(Account)
     end
 

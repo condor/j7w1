@@ -4,6 +4,18 @@ module J7W1
       AWS::SNS.new configuration.account
     end
 
+    APS_TABLE = {
+        message: :alert,
+        badge: :badge,
+        sound: :sound,
+    }.freeze
+
+    ANDROID_TABLE = {
+        message: :message,
+        badge: :badge,
+        sound: :sound,
+    }.freeze
+
     def create_ios_application(name, certs, private_key, options)
       sandbox = !(options[:sandbox] == false)
       configuration = options[:sns_configuration] || J7W1.configuration
@@ -39,8 +51,16 @@ module J7W1
       sns_client ||= create_sns_client(sns_configuration || J7W1.configuration)
 
       sns_config = J7W1.configuration
-      app_arn = platform == :ios ?  sns_config.ios_endpoint.arn :
-        sns_config.android_endpoint.arn
+
+      app_arn =
+          case platform
+            when :ios
+              sns_config.ios_endpoint.arn
+            when :android
+              sns_config.android_endpoint.arn
+            else
+
+          end
 
       endpoint =
         sns_client.client.create_platform_endpoint(
@@ -70,7 +90,7 @@ module J7W1
       sns_client = options[:sns_client]
 
       message_value = {}
-      message_value.merge!(alert: message) unless message.blank?
+      message_value.merge!(message: message) unless message.blank?
       message_value.merge!(badge: badge) unless badge.blank?
       message_value.merge!(sound: sound) unless sound.blank?
 
@@ -86,10 +106,10 @@ module J7W1
 
     private
     def payload_for(message_value, platform)
-      case platform
-        when 'ios'
+      case platform.to_sym
+        when :ios
           ios_payload_for(message_value)
-        when 'android'
+        when :android
           android_payload_for(message_value)
       end
     end
@@ -97,11 +117,23 @@ module J7W1
     def ios_payload_for(message_value)
       prefix = J7W1.configuration.ios_endpoint.sandbox? ?
           :APNS_SANDBOX : :APNS
-      {prefix => {aps: message_value}.to_json}
+
+      {prefix => {aps: message_content_with_table(message_value, APS_TABLE)}.to_json}
     end
 
     def android_payload_for(message_value)
-      # TODO Android Push Implementation
+      {
+          gcm: {
+              data: message_content_with_table(message_value, ANDROID_TABLE)
+          }.to_json
+      }
+    end
+
+    def message_content_with_table(content, table)
+      table.keys.reduce({}) do |h, key|
+        h[table[key]] = content[key]
+        h
+      end
     end
 
     def content_from(argument)
