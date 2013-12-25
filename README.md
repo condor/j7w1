@@ -1,6 +1,6 @@
 # J7W1
 
-A gem to send the push notification to mobile app via Amazon Simple Notification Service (SNS). Currently supports only iOS platform, but the support for Android is also scheduled.
+A gem to send the push notification to mobile app via Amazon Simple Notification Service (SNS). Currently supports only iOS platform at production quality. The support for Android is experimentally implemented.
 
 ## Installation
 
@@ -39,6 +39,8 @@ Configuration is expected to have the structure as below:
     app_endpoint:
         ios:
             arn: "<The ARN of your app.>"
+				android:
+						arn: "<The ARN of your android app.>"
     account:
         access_key_id: "<Your Access Key>"
         secret_access_key: "<Your Secret Key>"
