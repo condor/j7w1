@@ -6,8 +6,9 @@ module J7W1
       case platform
         when :ios, :'iphone os', :'ipad os'
           :ios
+        when :android
+          :android
         else
-          # TODO Android
           platform
       end
     end
