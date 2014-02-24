@@ -39,8 +39,8 @@ Configuration is expected to have the structure as below:
     app_endpoint:
         ios:
             arn: "<The ARN of your app.>"
-				android:
-						arn: "<The ARN of your android app.>"
+		android:
+			arn: "<The ARN of your android app.>"
     account:
         access_key_id: "<Your Access Key>"
         secret_access_key: "<Your Secret Key>"
