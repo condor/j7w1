@@ -123,7 +123,7 @@ module J7W1
 
     def android_payload_for(message_value)
       {
-          gcm: {
+          GCM: {
               data: message_content_with_table(message_value, ANDROID_TABLE)
           }.to_json
       }
