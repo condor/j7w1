@@ -97,7 +97,14 @@ module J7W1
       payload = payload_for(message_value, platform)
 
       sns_client ||= create_sns_client(sns_configuration || J7W1.configuration)
-      sns_client.client.publish(
+      client = sns_client.client
+
+      enabled = (client.get_endpoint_attributes(endpoint_arn: endpoint_arn)[:attributes]['Enabled'] == 'true')
+      unless enabled
+        client.set_endpoint_attributes endpoint_arn: endpoint_arn, attributes: {'Enabled' => 'true'}
+      end
+
+      client.publish(
           target_arn: endpoint_arn,
           message: payload.to_json,
           message_structure: 'json',
