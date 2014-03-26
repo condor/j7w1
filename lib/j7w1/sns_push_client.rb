@@ -4,6 +4,8 @@ module J7W1
       AWS::SNS.new configuration.account
     end
 
+    APNS_MAX_MESSAGE_SIZE = 40
+
     APS_TABLE = {
         message: :alert,
         badge: :badge,
@@ -14,6 +16,7 @@ module J7W1
         message: :message,
         badge: :badge,
         sound: :sound,
+        data: :data,
     }.freeze
 
     def create_ios_application(name, certs, private_key, options)
@@ -86,6 +89,7 @@ module J7W1
       message = options[:message]
       badge = options[:badge]
       sound = options[:sound]
+      data = options[:data]
       sns_configuration = options[:sns_configuration]
       sns_client = options[:sns_client]
 
@@ -94,7 +98,7 @@ module J7W1
       message_value.merge!(badge: badge) unless badge.blank?
       message_value.merge!(sound: sound) unless sound.blank?
 
-      payload = payload_for(message_value, platform)
+      payload = payload_for(message_value, data, platform)
 
       sns_client ||= create_sns_client(sns_configuration || J7W1.configuration)
       client = sns_client.client
@@ -112,23 +116,33 @@ module J7W1
     end
 
     private
-    def payload_for(message_value, platform)
+    def payload_for(message_value, data, platform)
       case platform.to_sym
         when :ios
-          ios_payload_for(message_value)
+          ios_payload_for(message_value, data)
         when :android
-          android_payload_for(message_value)
+          android_payload_for(message_value, data)
       end
     end
 
-    def ios_payload_for(message_value)
+    def ios_payload_for(message_value, data)
       prefix = J7W1.configuration.ios_endpoint.sandbox? ?
           :APNS_SANDBOX : :APNS
 
-      {prefix => {aps: message_content_with_table(message_value, APS_TABLE)}.to_json}
+      if message_value[:message] && message_value[:message] > APNS_MAX_MESSAGE_SIZE
+        message_value[:message] = message_value[:message][0...(APNS_MAX_MESSAGE_SIZE - 3)] + '...'
+      end
+
+      content = {
+          aps: message_content_with_table(message_value, APS_TABLE),
+      }
+      content.merge! data: data if data
+
+      {prefix => content.to_json}
     end
 
-    def android_payload_for(message_value)
+    def android_payload_for(message_value, data)
+      message_value.merge!(data: data)
       {
           GCM: {
               data: message_content_with_table(message_value, ANDROID_TABLE)
