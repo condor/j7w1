@@ -1,12 +1,13 @@
 require 'yaml'
 
 module J7W1
-  autoload :Configuration, 'j7w1/configuration'
-  autoload :Util, 'j7w1/util'
-  autoload :Version, 'j7w1/version'
-  autoload :ActiveRecordExt, 'j7w1/active_record_ext'
-  autoload :MockPushClient, 'j7w1/mock_push_client'
-  autoload :SNSPushClient, 'j7w1/sns_push_client'
+  autoload :Configuration,    'j7w1/configuration'
+  autoload :Util,             'j7w1/util'
+  autoload :Version,          'j7w1/version'
+  autoload :ActiveRecordExt,  'j7w1/active_record_ext'
+  autoload :MockPushClient,   'j7w1/mock_push_client'
+  autoload :SNSPushClient,    'j7w1/sns_push_client'
+  autoload :PushRefused,      'j7w1/exceptions'
 
   ActiveRecord::Base.__send__(:include, ActiveRecordExt) if defined? ActiveRecord::Base
 
