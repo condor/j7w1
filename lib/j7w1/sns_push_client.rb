@@ -129,7 +129,7 @@ module J7W1
       prefix = J7W1.configuration.ios_endpoint.sandbox? ?
           :APNS_SANDBOX : :APNS
 
-      if message_value[:message] && message_value[:message] > APNS_MAX_MESSAGE_SIZE
+      if message_value[:message] && message_value[:message].length > APNS_MAX_MESSAGE_SIZE
         message_value[:message] = message_value[:message][0...(APNS_MAX_MESSAGE_SIZE - 3)] + '...'
       end
 
