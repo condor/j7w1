@@ -34,7 +34,7 @@ class J8W1ApplicationDevice < ActiveRecord::Base
     update_attributes! device_endpoint_arn: device_endpoint_arn
   end
 
-  def destroy_device_endpoint
+  def self.destroy_device_endpoint(device_arn)
     J7W1::PushClient.destroy_endpoint device_arn
   end
 
@@ -46,7 +46,7 @@ class J8W1ApplicationDevice < ActiveRecord::Base
   end
 
   def destroy_device_endpoint_async
-    delay.destroy_device_endpoint
+    self.class.delay.destroy_device_endpoint device_endpoint_arn
   end
 <%- elsif options['async_engine'] == 'sidekiq' -%>
 
@@ -55,7 +55,7 @@ class J8W1ApplicationDevice < ActiveRecord::Base
   end
 
   def destroy_device_endpoint_async
-    J7W1DestroyEndpointWorker.perform_async id
+    J7W1DestroyEndpointWorker.perform_async device_endpoint_arn
   end
 <%- end -%>
 end
