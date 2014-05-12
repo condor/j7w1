@@ -72,7 +72,7 @@ module J7W1
       endpoint[:endpoint_arn]
     end
 
-    def destroy_endpoint(device_endpoint_arn, options = {})
+    def destroy_device_endpoint(device_endpoint_arn, options = {})
       sns_client = options[:sns_client]
       sns_client ||= create_sns_client(sns_configuration || J7W1.configuration)
 
