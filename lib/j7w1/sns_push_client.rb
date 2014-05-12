@@ -167,6 +167,7 @@ module J7W1
     end
 
     module_function :create_sns_client, :create_ios_application, :create_device_endpoint, :push,
-      :payload_for, :ios_payload_for, :android_payload_for, :content_from, :message_content_with_table
+      :payload_for, :ios_payload_for, :android_payload_for, :content_from, :message_content_with_table,
+      :destroy_device_endpoint, :destroy_application_endpoint
   end
 end
