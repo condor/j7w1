@@ -6,17 +6,23 @@ module J7W1
 
     APNS_MAX_MESSAGE_SIZE = 40
 
-    APS_TABLE = {
+    INPUT_PAYLOAD_TABLE = {
+      ios: {
         message: :alert,
         badge: :badge,
         sound: :sound,
-    }.freeze
-
-    ANDROID_TABLE = {
+      }.freeze,
+      android: {
         message: :message,
         badge: :badge,
         sound: :sound,
         data: :data,
+      }.freeze,
+    }.freeze
+
+    DEFAULT_SOUND_VALUE = {
+      android: true,
+      ios: 'default',
     }.freeze
 
     def create_ios_application(name, certs, private_key, options)
@@ -132,7 +138,7 @@ module J7W1
       end
 
       content = {
-          aps: message_content_with_table(message_value, APS_TABLE),
+          aps: message_content(message_value, platform: :ios),
       }
       content.merge! data: data if data
 
@@ -143,12 +149,16 @@ module J7W1
       message_value.merge!(data: data)
       {
           GCM: {
-              data: message_content_with_table(message_value, ANDROID_TABLE)
+              data: message_content(message_value, platform: :android),
           }.to_json
       }
     end
 
-    def message_content_with_table(content, table)
+    def message_content(content, platform: nil)
+      table = INPUT_PAYLOAD_TABLE[platform]
+
+      content[:sound] = DEFAULT_SOUND_VALUE[platform] if content[:sound] == true
+
       table.keys.reduce({}) do |h, key|
         h[table[key]] = content[key]
         h
@@ -165,7 +175,7 @@ module J7W1
     end
 
     module_function :create_sns_client, :create_ios_application, :create_device_endpoint, :push,
-      :payload_for, :ios_payload_for, :android_payload_for, :content_from, :message_content_with_table,
+      :payload_for, :ios_payload_for, :android_payload_for, :content_from, :message_content,
       :destroy_device_endpoint, :destroy_application_endpoint
   end
 end
