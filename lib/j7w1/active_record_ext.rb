@@ -34,6 +34,10 @@ module J7W1
           device.push! options
         end
       end
+
+      def set_badge(count = 0)
+        push!(badge: count)
+      end
     end
   end
 end
