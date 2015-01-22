@@ -3,5 +3,5 @@ ruby:
   - '2.0.0'
   - '2.2.0'
   - jruby-20mode
-install: bundle install
-script: SKIP_COV=1 bundle exec rspec spec
+install: ls
+script: ls -al
