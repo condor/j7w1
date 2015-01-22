@@ -4,7 +4,10 @@ module J7W1
       AWS::SNS.new configuration.account
     end
 
-    APNS_MAX_MESSAGE_SIZE = 40
+    APNS_MAX_PAYLOAD = 256
+
+    SHORTEN_REPLACEMENT = '...'.freeze
+    SHORTEN_REPLACEMENT_LENGTH = SHORTEN_REPLACEMENT.length
 
     INPUT_PAYLOAD_TABLE = {
       ios: {
@@ -87,6 +90,20 @@ module J7W1
       nil
     end
 
+    def create_topic(name, options)
+      sns_client = options[:sns_client]
+      sns_client ||= create_sns_client(sns_configuration || J7W1.configuration)
+
+      sns_client.topics.create name
+    end
+
+    def subscribe_topic(topic_name, endpoint_arn, options)
+      sns_client = options[:sns_client]
+      sns_client ||= create_sns_client(sns_configuration || J7W1.configuration)
+
+      sns_client.topics[name]
+    end
+
     def push(endpoint_arn, platform, options = {})
       return unless endpoint_arn && platform
 
@@ -133,16 +150,37 @@ module J7W1
       prefix = J7W1.configuration.ios_endpoint.sandbox? ?
           :APNS_SANDBOX : :APNS
 
-      if message_value[:message] && message_value[:message].length > APNS_MAX_MESSAGE_SIZE
-        message_value[:message] = message_value[:message][0...(APNS_MAX_MESSAGE_SIZE - 3)] + '...'
-      end
-
       content = {
           aps: message_content(message_value, platform: :ios),
       }
       content.merge! data: data if data
 
-      {prefix => content.to_json}
+      {prefix => ios_truncated_payload(content)}
+    end
+
+    def ios_truncated_payload(data)
+      payload = data.to_json
+
+      # Truncation is skipped when the payload is sufficiently lightweight.
+      return payload if (limit_break = payload.bytesize - APNX_MAX_PAYLOAD) >= 0
+
+      # Raise error if shortening of the alert cannot make the payload sufficiently short.
+      size_to_reduce = limit_break + SHORTEN_REPLACEMENT_LENGTH
+      raise "Payload is too heavy (#{payload.length})" unless
+        data[:alert] && data[:alert].bytesize > size_to_reduce
+
+      # Chopping the alert from its last -> first to avoid destroying the character's border
+      # and keep its content as long as possible.
+      chopped_length = 0
+      chopped_count = 0
+      while chopped_length < size_to_reduce
+        chopped_length += data[:alert][-1].bytesize
+        chopped_count += 1
+      end
+      data[:alert][-chopped_count..-1] = SHORTEN_REPLACEMENT
+      # Problem won't be occur because at least a character is truncated.
+
+      data.to_json
     end
 
     def android_payload_for(message_value, data)
