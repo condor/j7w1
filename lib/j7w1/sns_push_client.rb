@@ -162,11 +162,11 @@ module J7W1
       payload = data.to_json
 
       # Truncation is skipped when the payload is sufficiently lightweight.
-      return payload if (limit_break = payload.bytesize - APNS_MAX_PAYLOAD) >= 0
+      return payload if (limit_break = payload.bytesize - APNS_MAX_PAYLOAD) <= 0
 
       # Raise error if shortening of the alert cannot make the payload sufficiently short.
       size_to_reduce = limit_break + SHORTEN_REPLACEMENT_LENGTH
-      raise "Payload is too heavy (#{payload.length})" unless
+      raise "Payload is too heavy (original size: #{payload.bytesize}, except message: (#{payload.bytesize - data[:alert].to_s.bytesize}))" unless
         data[:alert] && data[:alert].bytesize > size_to_reduce
 
       # Chopping the alert from its last -> first to avoid destroying the character's border
